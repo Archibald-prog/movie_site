@@ -1,15 +1,22 @@
 from django.db import models
 from datetime import date
 
+from modules.services.utils import gen_slug
+
 
 class Category(models.Model):
     """Категории"""
     name = models.CharField(verbose_name="Категория", max_length=150)
-    slug = models.SlugField(max_length=160, unique=True, db_index=True, verbose_name="URL")
+    slug = models.SlugField(max_length=160, blank=True, unique=True, db_index=True, verbose_name="URL")
     description = models.TextField("Описание")
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = gen_slug(self, self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Категория"
@@ -19,13 +26,18 @@ class Category(models.Model):
 class Actor(models.Model):
     """Актеры и режиссеры"""
     name = models.CharField(verbose_name="Имя", max_length=100)
-    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
+    slug = models.SlugField(max_length=255, blank=True, unique=True, db_index=True, verbose_name="URL")
     age = models.PositiveSmallIntegerField(verbose_name="Возраст", default=0)
     description = models.TextField("Описание")
     image = models.ImageField(verbose_name="Изображение", upload_to="actors/")
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = gen_slug(self, self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Актеры и режиссеры"
@@ -35,11 +47,16 @@ class Actor(models.Model):
 class Genre(models.Model):
     """Жанры"""
     name = models.CharField(verbose_name="Имя", max_length=100)
-    slug = models.SlugField(max_length=160, unique=True, db_index=True, verbose_name="URL")
+    slug = models.SlugField(max_length=160, blank=True, unique=True, db_index=True, verbose_name="URL")
     description = models.TextField("Описание")
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = gen_slug(self, self.name)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Жанр"
@@ -49,7 +66,7 @@ class Genre(models.Model):
 class Movie(models.Model):
     """Фильм"""
     title = models.CharField(verbose_name="Название", max_length=255)
-    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
+    slug = models.SlugField(max_length=255, blank=True, unique=True, db_index=True, verbose_name="URL")
     tagline = models.CharField(verbose_name="Слоган", max_length=100, default='')
     description = models.TextField("Описание")
     poster = models.ImageField(verbose_name="Постер", upload_to="movies/")
@@ -74,6 +91,11 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = gen_slug(self, self.title)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Фильм"
