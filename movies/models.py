@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from datetime import date
 
 from modules.services.utils import gen_slug
@@ -96,6 +97,9 @@ class Movie(models.Model):
         if not self.slug:
             self.slug = gen_slug(self, self.title)
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('movie_detail', kwargs={'slug': self.slug})
 
     class Meta:
         verbose_name = "Фильм"
