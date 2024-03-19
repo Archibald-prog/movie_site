@@ -35,6 +35,9 @@ class Actor(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('actor_detail', kwargs={"slug": self.slug})
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = gen_slug(self, self.name)
